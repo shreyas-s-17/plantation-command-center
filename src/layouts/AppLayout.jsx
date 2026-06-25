@@ -1,11 +1,13 @@
 import { Outlet, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/services/supabase'
+import { useNavigate } from 'react-router-dom'
 
 
 export default function AppLayout() {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function checkSession() {
@@ -86,7 +88,7 @@ if (error || !userRecord) {
               className="rounded-lg border px-3 py-2 text-sm hover:bg-earth-100"
               onClick={async () => {
                 await supabase.auth.signOut()
-                window.location.href = "/login"
+navigate("/login", { replace: true })
               }}
             >
               Logout

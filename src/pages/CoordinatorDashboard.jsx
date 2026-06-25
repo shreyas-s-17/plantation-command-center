@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardBody, CardHeader, Input, Button, PageHeader } from '@/components/ui'
 import { supabase } from '@/services/supabase'
 import { cn } from '@/utils/cn'
@@ -26,6 +26,7 @@ function normalizeSite(row) {
 
 export default function CoordinatorDashboard() {
   const { siteId } = useParams()
+  const navigate = useNavigate()
   const [site, setSite] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -110,10 +111,10 @@ export default function CoordinatorDashboard() {
     }
 
     setPlantationCount('')
-    setRemarks('')
-    setSuccessMessage('Plantation recorded successfully.')
-    setSubmitting(false)
-    await fetchSite()
+setRemarks('')
+setSubmitting(false)
+
+navigate("/")
   }
 
   if (loading) {
@@ -151,6 +152,14 @@ export default function CoordinatorDashboard() {
         title={site.name}
         description="Record daily plantation progress for this site"
       />
+      <div className="mb-4">
+  <Button
+    variant="secondary"
+    onClick={() => navigate("/")}
+  >
+    ← Back to Dashboard
+  </Button>
+</div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
