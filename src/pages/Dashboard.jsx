@@ -1,4 +1,5 @@
-import { Card, CardBody, Badge, PageHeader, Button } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
+import { Card, CardBody, Badge, Button } from '@/components/ui'
 import { useSites } from '@/hooks/useSites'
 
 const statusVariant = {
@@ -21,6 +22,7 @@ function getProgress(completed, target) {
 
 export default function Dashboard() {
   const { sites, loading, error } = useSites()
+  const navigate = useNavigate()
 
   const totals = sites.reduce(
     (acc, site) => {
@@ -34,41 +36,24 @@ export default function Dashboard() {
   const totalRemaining = getRemaining(totals.target, totals.completed)
 
   if (loading) {
-    return (
-      <>
-        <PageHeader
-          title="Dashboard"
-          description="Plantation progress across all sites"
-        />
-        <p className="text-sm text-earth-600">Loading sites...</p>
-      </>
-    )
+    return <p className="text-sm text-earth-600">Loading sites...</p>
   }
 
   if (error) {
     return (
-      <>
-        <PageHeader
-          title="Dashboard"
-          description="Plantation progress across all sites"
-        />
-        <Card>
-          <CardBody>
-            <p className="text-sm font-medium text-red-700">Failed to load sites</p>
-            <p className="mt-1 text-sm text-earth-600">{error}</p>
-          </CardBody>
-        </Card>
-      </>
+      <Card>
+        <CardBody>
+          <p className="text-sm font-medium text-red-700">
+            Failed to load sites
+          </p>
+          <p className="mt-1 text-sm text-earth-600">{error}</p>
+        </CardBody>
+      </Card>
     )
   }
 
   return (
     <>
-      <PageHeader
-        title="Dashboard"
-        description="Plantation progress across all sites"
-      />
-
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardBody>
@@ -105,7 +90,7 @@ export default function Dashboard() {
         {sites.map((site) => {
           const target = site.target
           const completed = site.completed
-          const remaining = Math.max(target - completed, 0)
+          const remaining = getRemaining(target, completed)
           const progress = getProgress(completed, target)
 
           return (
@@ -113,52 +98,51 @@ export default function Dashboard() {
               <CardBody className="flex flex-col gap-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
-                    <h2 className="text-lg font-semibold text-earth-950">{site.name}</h2>
-                    <p className="mt-0.5 text-xs text-earth-500">ID: {site.id}</p>
+                    <h2 className="text-lg font-semibold text-earth-950">
+                      {site.name}
+                    </h2>
+                    <p className="mt-0.5 text-xs text-earth-500">
+                      ID: {site.id}
+                    </p>
                   </div>
+
                   <Badge variant={statusVariant[site.status] ?? 'default'}>
                     {site.status}
                   </Badge>
                 </div>
 
-                <dl className="grid grid-cols-3 gap-3 text-center sm:gap-4">
-                  <div className="rounded-lg bg-earth-50 px-2 py-2.5 sm:px-3">
+                <dl className="grid grid-cols-3 gap-3 text-center">
+                  <div className="rounded-lg bg-earth-50 p-3">
                     <dt className="text-xs text-earth-600">Target</dt>
-                    <dd className="mt-1 text-sm font-semibold text-earth-950 sm:text-base">
+                    <dd className="mt-1 font-semibold">
                       {formatNumber(target)}
                     </dd>
                   </div>
-                  <div className="rounded-lg bg-forest-50 px-2 py-2.5 sm:px-3">
+
+                  <div className="rounded-lg bg-forest-50 p-3">
                     <dt className="text-xs text-earth-600">Completed</dt>
-                    <dd className="mt-1 text-sm font-semibold text-forest-700 sm:text-base">
+                    <dd className="mt-1 font-semibold text-forest-700">
                       {formatNumber(completed)}
                     </dd>
                   </div>
-                  <div className="rounded-lg bg-earth-50 px-2 py-2.5 sm:px-3">
+
+                  <div className="rounded-lg bg-earth-50 p-3">
                     <dt className="text-xs text-earth-600">Remaining</dt>
-                    <dd className="mt-1 text-sm font-semibold text-earth-950 sm:text-base">
+                    <dd className="mt-1 font-semibold">
                       {formatNumber(remaining)}
                     </dd>
                   </div>
                 </dl>
 
                 <div>
-                  <div className="mb-1.5 flex items-center justify-between text-xs text-earth-600">
+                  <div className="mb-2 flex justify-between text-xs">
                     <span>Progress</span>
-                    <span className="font-medium text-earth-900">
-                      {progress.toFixed(1)}%
-                    </span>
+                    <span>{progress.toFixed(1)}%</span>
                   </div>
-                  <div
-                    className="h-2.5 w-full overflow-hidden rounded-full bg-earth-100"
-                    role="progressbar"
-                    aria-valuenow={progress}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${site.name} progress`}
-                  >
+
+                  <div className="h-2 rounded-full bg-earth-100">
                     <div
-                      className="h-full rounded-full bg-forest-600 transition-all"
+                      className="h-2 rounded-full bg-forest-600"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -168,14 +152,20 @@ export default function Dashboard() {
                   <p className="text-xs font-medium uppercase tracking-wide text-earth-500">
                     Coordinators
                   </p>
-                  <p className="mt-1.5 text-sm text-earth-800">
-                    {site.coordinators.map((coordinator) => coordinator.name).join(', ')}
+
+                  <p className="mt-1 text-sm">
+                    {site.coordinators
+                      .map((coordinator) => coordinator.name)
+                      .join(', ')}
                   </p>
                 </div>
 
-                <div className="pt-1">
-                  <Button className="w-full sm:w-auto">Update</Button>
-                </div>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate(`/coordinator/${site.id}`)}
+                >
+                  Update
+                </Button>
               </CardBody>
             </Card>
           )

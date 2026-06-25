@@ -31,6 +31,10 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
+        path: ROUTES.COORDINATOR,
+        element: <CoordinatorDashboard />,
+      },
+      {
         path: ROUTES.SITE_DETAILS,
         element: <SiteDetails />,
       },
