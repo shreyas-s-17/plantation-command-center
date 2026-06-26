@@ -43,12 +43,6 @@ export default function CoordinatorDashboard() {
       setLoading(false)
       return
     }
-
-    const { data, error: fetchError } = await supabase
-  .from('sites')
-  .select(SITE_COLUMNS)
-  .eq('id', siteId)
-  .single()
     
     const { data, error: fetchError } = await supabase
       .from('sites')
