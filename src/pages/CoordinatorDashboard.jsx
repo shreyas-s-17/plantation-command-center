@@ -55,7 +55,9 @@ export default function CoordinatorDashboard() {
       .select('role, site_id')
       .eq('email', session.user.email)
       .single()
-    
+      console.log("URL siteId:", siteId)
+      console.log("DB site_id:", userRecord.site_id)
+      
     if (
       userRecord.role !== 'superadmin' &&
       userRecord.site_id !== siteId
