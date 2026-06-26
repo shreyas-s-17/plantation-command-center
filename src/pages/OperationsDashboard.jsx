@@ -5,7 +5,7 @@ import { supabase } from '@/services/supabase'
 import { cn } from '@/utils/cn'
 
 const SITE_COLUMNS =
-  'id, site_code, site_name, target_saplings, completed_saplings, current_volunteers, status, coordinators, last_updated'
+  'id, site_code, site_name, target_saplings, completed_saplings, status, plantation_coordinator, operations_coordinator, last_updated'
 
 function formatNumber(value) {
   return value.toLocaleString()
