@@ -58,7 +58,14 @@ if (error || !userRecord) {
         window.location.replace(`/operations/${userRecord.site_id}`)
         return
       }
-  
+      if (
+        (userRecord.role === 'admin' ||
+         userRecord.role === 'superadmin') &&
+        window.location.pathname !== '/'
+      ) {
+        window.location.replace('/')
+        return
+      }
       setLoading(false)
     }
   

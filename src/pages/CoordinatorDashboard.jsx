@@ -46,7 +46,23 @@ export default function CoordinatorDashboard() {
 
     setLoading(true)
     setError(null)
-
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('role, site_id')
+      .eq('email', session.user.email)
+      .single()
+    
+    if (
+      userRecord.role !== 'superadmin' &&
+      userRecord.site_id !== siteId
+    ) {
+      navigate('/')
+      return
+    }
     const { data, error: fetchError } = await supabase
       .from('sites')
       .select(SITE_COLUMNS)

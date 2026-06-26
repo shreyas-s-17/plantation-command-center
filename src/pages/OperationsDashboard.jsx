@@ -5,7 +5,7 @@ import { supabase } from '@/services/supabase'
 import { cn } from '@/utils/cn'
 
 const SITE_COLUMNS =
-  'id, site_code, site_name, target_saplings, completed_saplings, status, coordinators, last_updated'
+  'id, site_code, site_name, target_saplings, completed_saplings, current_volunteers, status, coordinators, last_updated'
 
 function formatNumber(value) {
   return value.toLocaleString()
@@ -20,6 +20,7 @@ function normalizeSite(row) {
     name: row.site_name ?? '',
     target,
     completed,
+    volunteers: Number(row.current_volunteers ?? 0),
     remaining: Math.max(target - completed, 0),
   }
 }
@@ -46,6 +47,24 @@ export default function CoordinatorDashboard() {
 
     setLoading(true)
     setError(null)
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('role, site_id')
+      .eq('email', session.user.email)
+      .single()
+    
+    if (
+      userRecord.role !== 'superadmin' &&
+      userRecord.site_id !== siteId
+    ) {
+      navigate('/')
+      return
+    }
 
     const { data, error: fetchError } = await supabase
       .from('sites')
@@ -76,7 +95,7 @@ export default function CoordinatorDashboard() {
     const count = Number(plantationCount)
 
     if (!Number.isFinite(count) || count <= 0) {
-      setSubmitError('Enter a valid number of volunreers.')
+      setSubmitError('Enter a valid number of volunteers.')
       return
     }
 
@@ -96,11 +115,6 @@ export default function CoordinatorDashboard() {
     return
   }
 
-    if (updateError) {
-      setSubmitError(updateError.message)
-      setSubmitting(false)
-      return
-    }
 
     setPlantationCount('')
 setRemarks('')
@@ -187,6 +201,18 @@ navigate("/")
             </p>
           </CardBody>
         </Card>
+
+        <Card>
+  <CardBody>
+    <p className="text-sm font-medium text-earth-600">
+      Current Volunteers
+    </p>
+    <p className="mt-2 text-2xl font-semibold text-blue-700">
+      {formatNumber(site.volunteers)}
+    </p>
+  </CardBody>
+</Card>
+
       </div>
 
       <Card>

@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardBody, Badge, Button } from '@/components/ui'
 import { useSites } from '@/hooks/useSites'
+import { supabase } from '@/services/supabase'
 
 const statusVariant = {
   active: 'success',
@@ -22,7 +24,27 @@ function getProgress(completed, target) {
 
 export default function Dashboard() {
   const { sites, loading, error } = useSites()
+  const [role, setRole] = useState(null)
   const navigate = useNavigate()
+  useEffect(() => {
+    async function loadRole() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+  
+      if (!session) return
+  
+      const { data } = await supabase
+        .from('users')
+        .select('role')
+        .eq('email', session.user.email)
+        .single()
+  
+      setRole(data?.role ?? null)
+    }
+  
+    loadRole()
+  }, [])
 
   const totals = sites.reduce(
     (acc, site) => {
@@ -156,24 +178,34 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-earth-500">
-                    Coordinators
-                  </p>
+                <div className="space-y-2">
+  <div>
+    <p className="text-xs font-medium uppercase tracking-wide text-earth-500">
+      🌱 Plantation Coordinator
+    </p>
+    <p className="text-sm text-earth-900">
+      {site.plantationCoordinator || "-"}
+    </p>
+  </div>
 
-                  <p className="mt-1 text-sm">
-                    {site.coordinators
-                      .map((coordinator) => coordinator.name)
-                      .join(', ')}
-                  </p>
-                </div>
+  <div>
+    <p className="text-xs font-medium uppercase tracking-wide text-earth-500">
+      👥 Operations Coordinator
+    </p>
+    <p className="text-sm text-earth-900">
+      {site.operationsCoordinator || "-"}
+    </p>
+  </div>
+</div>
 
-                <Button
-                  className="w-full"
-                  onClick={() => navigate(`/coordinator/${site.id}`)}
-                >
-                  Update
-                </Button>
+                {role === 'superadmin' && (
+  <Button
+    className="w-full"
+    onClick={() => navigate(`/coordinator/${site.id}`)}
+  >
+    Update
+  </Button>
+)}
               </CardBody>
             </Card>
           )
