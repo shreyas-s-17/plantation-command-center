@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/services/supabase'
 
 const SITE_COLUMNS =
-  'id, site_code, site_name, target_saplings, completed_saplings, status, coordinators, last_updated'
+  'id, site_code, site_name, target_saplings, completed_saplings, current_volunteers, status, coordinators, last_updated'
 
 function normalizeSite(row) {
   const target = Number(row.target_saplings ?? 0)
@@ -14,6 +14,7 @@ function normalizeSite(row) {
     name: row.site_name ?? '',
     target,
     completed,
+    volunteers: Number(row.current_volunteers ?? 0),
     coordinators: Array.isArray(row.coordinators) ? row.coordinators : [],
     status: row.status ?? 'active',
     lastUpdated: row.last_updated ?? null,

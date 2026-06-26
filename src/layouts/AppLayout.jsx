@@ -44,10 +44,18 @@ if (error || !userRecord) {
       })
 
       if (
-        userRecord.role === 'coordinator' &&
+        userRecord.role === 'plantation' &&
         window.location.pathname === '/'
       ) {
         window.location.replace(`/coordinator/${userRecord.site_id}`)
+        return
+      }
+      
+      if (
+        userRecord.role === 'operations' &&
+        window.location.pathname === '/'
+      ) {
+        window.location.replace(`/operations/${userRecord.site_id}`)
         return
       }
   

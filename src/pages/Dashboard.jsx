@@ -111,7 +111,7 @@ export default function Dashboard() {
                   </Badge>
                 </div>
 
-                <dl className="grid grid-cols-3 gap-3 text-center">
+                <dl className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
                   <div className="rounded-lg bg-earth-50 p-3">
                     <dt className="text-xs text-earth-600">Target</dt>
                     <dd className="mt-1 font-semibold">
@@ -132,6 +132,14 @@ export default function Dashboard() {
                       {formatNumber(remaining)}
                     </dd>
                   </div>
+
+                  <div className="rounded-lg bg-blue-50 p-3">
+  <dt className="text-xs text-earth-600">Volunteers</dt>
+  <dd className="mt-1 font-semibold text-blue-700">
+    {formatNumber(site.volunteers)}
+  </dd>
+</div>
+
                 </dl>
 
                 <div>

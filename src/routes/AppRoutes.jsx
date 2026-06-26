@@ -10,6 +10,7 @@ import {
   Reports,
   Settings,
   NotFound,
+  OperationsDashboard,
 } from '@/pages'
 import { ROUTES } from '@/lib/routes'
 
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.SETTINGS,
         element: <Settings />,
+      },
+      {
+        path: ROUTES.OPERATIONS,
+        element: <OperationsDashboard />,
       },
     ],
   },

@@ -6,6 +6,7 @@ export const ROUTES = {
   ADMIN: '/admin',
   REPORTS: '/reports',
   SETTINGS: '/settings',
+  OPERATIONS: '/operations/:siteId',
 }
 
 export function siteDetailsPath(siteId) {
